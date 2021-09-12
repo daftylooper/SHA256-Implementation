@@ -17,7 +17,6 @@ bitset<32> choice(bitset<32> x, bitset<32> y, bitset<32> z);
 bitset<32> majority(bitset<32> x, bitset<32> y, bitset<32> z);
 string toBinary(string message);
 bitset<512> makeMessage(string input);
-vector< bitset<32> > makeMessageSchedule(bitset<512> message);
 vector<bitset<32>> makeConstants()
 
 
@@ -54,27 +53,6 @@ vector<bitset<32>> makeConstants(){
     }
 
     return constants;
-}
-
-vector<bitset<32>> makeMessageSchedule(bitset<512> message){
-	vector< bitset<32> > messageSchedule;
-	for(int i=15; i>0; i--){
-		bitset<32> subsetMsg;
-		for(int j=31; j>0; j--){
-			subsetMsg[j] = message[i*j + j]; //i*j + j
-		}
-		cout<<subsetMsg<<"\n";
-		messageSchedule.push_back(subsetMsg);
-	}
-	
-	cout<<"\n";
-	/*
-	for(int i=0; i<16; i++){
-		cout<<messageSchedule[i]<<"\n";
-	}
-	*/
-	
-	return messageSchedule;
 }
 
 bitset<512> makeMessage(string input){
