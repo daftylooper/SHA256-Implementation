@@ -3,6 +3,8 @@
 #include<vector>
 #include<fstream>
 
+//Comment by Prashant
+
 using namespace std;
 
 bitset<32> SHR(bitset<32> x, int n);
