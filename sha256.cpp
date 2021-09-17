@@ -19,22 +19,41 @@ string toBinary(string message);
 bitset<512> makeMessage(string input); //Creates a 512 bit bitset
 vector< bitset<32>> makeMessageSchedule(bitset<512> message); //Creates a array of 64, 32bit numbers of the "message"
 vector<bitset<32>> makeConstants(); //Creates 64 constants based on some rule
-
+vector<bitset<32>> makeH0(); //Creates another set of 8 constants
 
 int main(){
 	cout<<"Enter your string......\n";
 	string input;
 	cin>>input;
 
+	//If the length(binary(message)) > 512-64-1, make another message block( basically, vector<bitset<512>> )
+	//For a message with length equal to 512-64-1, is the length of the message in binary =< 64?
+
 	bitset<512> message; //creates a 512 bit bitset
 	message = makeMessage(input); //c
 	
 	vector<bitset<32>> messageSchedule;
 	messageSchedule = makeMessageSchedule(message); //creates a array of 64, 32bit numbers of the "message"
+	messageSchedule.shrink_to_fit(); //Shrinks vector size to what it truly is, to save memory
 
 	vector<bitset<32>> constants;
 	constants = makeConstants();
+	constants.shrink_to_fit();
+
+	vector<bitset<32>> H0;
+	H0 = makeH0();
+	H0.shrink_to_fit();
+
 	return 0;
+}
+
+vector<bitset<32>> makeH0(){
+	vector<bitset<32>> H0 = {};
+	const unsigned int H0_k[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+	for(int i=0; i<8; i++){
+		H0.push_back(bitset<32>(H0_k[i]));
+	}
+	return H0;
 }
 
 vector<bitset<32>> makeConstants(){
