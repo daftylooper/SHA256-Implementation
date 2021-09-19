@@ -20,8 +20,21 @@ bitset<512> makeMessage(string input); //Creates a 512 bit bitset
 vector< bitset<32>> makeMessageSchedule(bitset<512> message); //Creates a array of 64, 32bit numbers of the "message"
 vector<bitset<32>> makeConstants(); //Creates 64 constants based on some rule
 vector<bitset<32>> makeH0(); //Creates another set of 8 constants
+vector<bitset<32>> makeH1(vector<bitset<32>> H0, vector<bitset<32>> constants, vector<bitset<32>> messageSchedule);
+vector<bitset<32>> output(vector<bitset<32>> H0, vector<bitset<32>> H1);
+vector<bitset<32>> makeOutput();
 
 int main(){
+
+	vector<bitset<32>> hashedOutput = makeOutput();
+	for(int i=0;i<8; i++){
+		cout<<hashedOutput[i];
+	}
+
+	return 0;
+}
+
+vector<bitset<32>> makeOutput(){
 	cout<<"Enter your string......\n";
 	string input;
 	cin>>input;
@@ -30,7 +43,7 @@ int main(){
 	//For a message with length equal to 512-64-1, is the length of the message in binary =< 64?
 
 	bitset<512> message; //creates a 512 bit bitset
-	message = makeMessage(input); //c
+	message = makeMessage(input); //refactors it
 	
 	vector<bitset<32>> messageSchedule;
 	messageSchedule = makeMessageSchedule(message); //creates a array of 64, 32bit numbers of the "message"
@@ -43,8 +56,49 @@ int main(){
 	vector<bitset<32>> H0;
 	H0 = makeH0();
 	H0.shrink_to_fit();
+	
+	vector<bitset<32>> H1;
+	H1 = makeH1(H0, constants, messageSchedule);
+	H1.shrink_to_fit();
 
-	return 0;
+	vector<bitset<32>> hashedOutput;
+	hashedOutput = output(H0, H1);
+	hashedOutput.shrink_to_fit();
+
+	return hashedOutput;
+}
+
+vector<bitset<32>> output(vector<bitset<32>> H0, vector<bitset<32>> H1){
+	vector<bitset<32>> hashedOutput;
+	for(int i=0 ;i<8; i++){
+		hashedOutput.push_back(ADD(H0[i], H1[i]));
+	}
+	return hashedOutput;
+}
+
+vector<bitset<32>> makeH1(vector<bitset<32>> H0, vector<bitset<32>> constants, vector<bitset<32>> messageSchedule){
+
+	vector<bitset<32>> H1 = H0;
+	bitset<32> T1;
+	bitset<32> T2;
+
+	for(int i=0; i<64; i++){
+	T1 = ADD(theta1(H1[4]), ADD(choice(H1[4], H1[5], H1[6]), ADD(H1[7], ADD(constants[i], messageSchedule[i]))));
+	T2 = ADD(theta0(H1[0]), majority(H1[0], H1[1], H1[2]));
+
+	//cout<<T1<<"\n"<<T2<<"\n\n";
+
+	H1[7] = H1[6];
+	H1[6] = H1[5];
+	H1[5] = H1[4];
+	H1[4] = ADD(H1[3], T1);
+	H1[3] = H1[2];
+	H1[2] = H1[1];
+	H1[1] = H1[0];
+	H1[0] = ADD(T1, T2);
+	}
+
+	return H1;
 }
 
 vector<bitset<32>> makeH0(){
