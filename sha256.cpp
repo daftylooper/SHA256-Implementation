@@ -1,7 +1,8 @@
 #include<iostream>
 #include<bitset>
 #include<vector>
-#include<fstream>
+#include<sstream>
+#include<string>
 
 using namespace std;
 
@@ -17,21 +18,37 @@ bitset<32> choice(bitset<32> x, bitset<32> y, bitset<32> z);
 bitset<32> majority(bitset<32> x, bitset<32> y, bitset<32> z);
 string toBinary(string message);
 bitset<512> makeMessage(string input); //Creates a 512 bit bitset
-vector< bitset<32>> makeMessageSchedule(bitset<512> message); //Creates a array of 64, 32bit numbers of the "message"
+vector<bitset<32>> makeMessageSchedule(bitset<512> message); //Creates a array of 64, 32bit numbers of the "message"
 vector<bitset<32>> makeConstants(); //Creates 64 constants based on some rule
 vector<bitset<32>> makeH0(); //Creates another set of 8 constants
 vector<bitset<32>> makeH1(vector<bitset<32>> H0, vector<bitset<32>> constants, vector<bitset<32>> messageSchedule);
 vector<bitset<32>> output(vector<bitset<32>> H0, vector<bitset<32>> H1);
 vector<bitset<32>> makeOutput();
+string hexdigest(vector<bitset<32>> hashedOutput);
 
 int main(){
 
 	vector<bitset<32>> hashedOutput = makeOutput();
-	for(int i=0;i<8; i++){
-		cout<<hashedOutput[i];
+
+	//Prints the binary of the hash
+	for(int i=0; i<8; i++){
+		cout<<hashedOutput[i]<<endl;
 	}
 
+	//Prints the hexdigest of the hash
+	cout<<hexdigest(hashedOutput)<<endl;
+
 	return 0;
+}
+
+string hexdigest(vector<bitset<32>> hashedOutput){
+	string digest = "";
+	for(int i=0; i<8; i++){
+		stringstream res;
+		res<<hex<<hashedOutput[i].to_ulong();
+		digest += res.str();
+	}
+	return digest;
 }
 
 vector<bitset<32>> makeOutput(){
