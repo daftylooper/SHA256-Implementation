@@ -17,7 +17,7 @@ bitset<32> theta1(bitset<32> x); //A compound function using XOR, ROTR
 bitset<32> choice(bitset<32> x, bitset<32> y, bitset<32> z);
 bitset<32> majority(bitset<32> x, bitset<32> y, bitset<32> z);
 string toBinary(string message);
-bitset<512> makeMessage(string input); //Creates a 512 bit bitset
+vector<bool> makeMessage(string input); //Creates a 512 bit bitset
 vector<bitset<32>> makeMessageSchedule(bitset<512> message); //Creates a array of 64, 32bit numbers of the "message"
 vector<bitset<32>> makeConstants(); //Creates 64 constants based on some rule
 vector<bitset<32>> makeH0(); //Creates another set of 8 constants
@@ -29,6 +29,7 @@ string hexdigest(vector<bitset<32>> hashedOutput);
 int main(){
 
 	vector<bitset<32>> hashedOutput = makeOutput();
+	cout<<"\n";
 
 	//Prints the binary of the hash
 	for(int i=0; i<8; i++){
@@ -53,18 +54,13 @@ string hexdigest(vector<bitset<32>> hashedOutput){
 
 vector<bitset<32>> makeOutput(){
 	cout<<"Enter your string......\n";
-	string input;
+	string input = "";
+
 	cin>>input;
 
-	//If the length(binary(message)) > 512-64-1, make another message block( basically, vector<bitset<512>> )
-	//For a message with length equal to 512-64-1, is the length of the message in binary =< 64?
-
-	bitset<512> message; //creates a 512 bit bitset
-	message = makeMessage(input); //refactors it
-	
-	vector<bitset<32>> messageSchedule;
-	messageSchedule = makeMessageSchedule(message); //creates a array of 64, 32bit numbers of the "message"
-	messageSchedule.shrink_to_fit(); //Shrinks vector size to what it truly is, to save memory
+	vector<bool> message;
+	message = makeMessage(input);
+	int n = message.size()/512;
 
 	vector<bitset<32>> constants;
 	constants = makeConstants();
@@ -74,13 +70,35 @@ vector<bitset<32>> makeOutput(){
 	H0 = makeH0();
 	H0.shrink_to_fit();
 	
+	vector<bitset<32>> messageSchedule;
 	vector<bitset<32>> H1;
-	H1 = makeH1(H0, constants, messageSchedule);
-	H1.shrink_to_fit();
-
 	vector<bitset<32>> hashedOutput;
-	hashedOutput = output(H0, H1);
-	hashedOutput.shrink_to_fit();
+	string strMsgBlock = "";
+
+	for(int i=0; i<n; i++){
+
+		strMsgBlock = "";
+		for(int j=(512*i); j<(512*(i+1)); j++){
+			strMsgBlock+=(message[j]) ? "1":"0";
+		}
+
+		cout<<"\n";
+		cout<<strMsgBlock;
+
+		bitset<512> messageBlock(strMsgBlock);
+		
+		messageSchedule = makeMessageSchedule(messageBlock); //creates a array of 64, 32bit numbers of the "message"
+		messageSchedule.shrink_to_fit(); //Shrinks vector size to what it truly is, to save memory
+		
+		H1 = makeH1(H0, constants, messageSchedule);
+		H1.shrink_to_fit();
+
+		hashedOutput = output(H0, H1);
+		hashedOutput.shrink_to_fit();
+
+		H0 = hashedOutput;
+		cout<<"\n"<<hexdigest(hashedOutput)<<endl;
+	}
 
 	return hashedOutput;
 }
@@ -177,16 +195,21 @@ vector<bitset<32>> makeMessageSchedule(bitset<512> message){
 	return messageSchedule;
 }
 
-bitset<512> makeMessage(string input){
-	string pad;
-	int padlen = 512 - toBinary(input).length() - 1 - 64;
+vector<bool> makeMessage(string input){
+	int msglen = input.length();
+	string binmsg = toBinary(input);
+	string msg = binmsg + "1" + bitset<64>(msglen).to_string();
+	string padding = "";
+	int padlen = 512 - (msg.length()%512);
 	for(int i=0; i<padlen; i++){
-		pad+="0";
+		padding+="0";
 	}
-	int msglen = toBinary(input).length();
-	bitset<64> bmsglen(msglen);
-	string strmsglen = bmsglen.to_string();
-	bitset<512> message(toBinary(input) + "1" + pad + strmsglen);
+	msg.insert(binmsg.length()+1, padding);
+
+	vector<bool> message;
+	message.reserve(msg.size());
+	for(auto a: msg)
+		message.push_back(a=='1');
 	return message;
 }
 
