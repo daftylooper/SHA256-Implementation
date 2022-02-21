@@ -82,9 +82,6 @@ vector<bitset<32>> makeOutput(){
 			strMsgBlock+=(message[j]) ? "1":"0";
 		}
 
-		cout<<"\n";
-		cout<<strMsgBlock;
-
 		bitset<512> messageBlock(strMsgBlock);
 		
 		messageSchedule = makeMessageSchedule(messageBlock); //creates a array of 64, 32bit numbers of the "message"
@@ -97,7 +94,6 @@ vector<bitset<32>> makeOutput(){
 		hashedOutput.shrink_to_fit();
 
 		H0 = hashedOutput;
-		cout<<"\n"<<hexdigest(hashedOutput)<<endl;
 	}
 
 	return hashedOutput;
@@ -120,8 +116,6 @@ vector<bitset<32>> makeH1(vector<bitset<32>> H0, vector<bitset<32>> constants, v
 	for(int i=0; i<64; i++){
 	T1 = ADD(theta1(H1[4]), ADD(choice(H1[4], H1[5], H1[6]), ADD(H1[7], ADD(constants[i], messageSchedule[i]))));
 	T2 = ADD(theta0(H1[0]), majority(H1[0], H1[1], H1[2]));
-
-	//cout<<T1<<"\n"<<T2<<"\n\n";
 
 	H1[7] = H1[6];
 	H1[6] = H1[5];
@@ -196,8 +190,8 @@ vector<bitset<32>> makeMessageSchedule(bitset<512> message){
 }
 
 vector<bool> makeMessage(string input){
-	int msglen = input.length();
 	string binmsg = toBinary(input);
+	int msglen = binmsg.length();
 	string msg = binmsg + "1" + bitset<64>(msglen).to_string();
 	string padding = "";
 	int padlen = 512 - (msg.length()%512);
