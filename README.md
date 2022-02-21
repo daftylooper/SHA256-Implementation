@@ -5,6 +5,5 @@ A program that implements the SHA256 algorithm and generates the binary+hexdiges
   <ul>
     <li>Implement Barebones SHA256 algorithm - DONE</li>
     <li>Make it compatible for any finite length of string - DONE</li>
-    <li>Add Salting Functionality - ONGOING</li>
-    <li>Add Time Attack Protection - PENDING</li>
+    <li>Add Time Attack Protection - ONGOING</li>
   </ul>
