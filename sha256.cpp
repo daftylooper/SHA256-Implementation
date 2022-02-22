@@ -3,6 +3,7 @@
 #include<vector>
 #include<sstream>
 #include<string>
+#include<time.h>
 
 using namespace std;
 
@@ -258,30 +259,9 @@ bitset<32> theta1(bitset<32> x){
 }
 
 bitset<32> choice(bitset<32> x, bitset<32> y, bitset<32> z){
-	//vector<bool> vec;
-	bitset<32> output;
-	for(int i=0; i<32; i++){
-		if(x[i] == 1){
-			output[i] = y[i];
-		}
-		if(x[i] == 0){
-			output[i] = z[i];
-		}
-	}
-	return output;
+	return XOR(x&y,~x&z);
 }
 
 bitset<32> majority(bitset<32> x, bitset<32> y, bitset<32> z){
-	bitset<32> output;
-	for(int i=0; i<32; i++){
-	int sum = x[i] + y[i] + z[i]; 
-	if(sum>=2 && sum<=3){
-		output[i] = 1;
-		}
-	if(sum>=0 && sum<=1){
-		output[i] = 0;
-		}
-	}
-	
-	return output;
+	return (x&(y|z))|(y&z);
 }
