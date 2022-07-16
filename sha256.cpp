@@ -4,6 +4,7 @@
 #include<sstream>
 #include<string>
 #include<time.h>
+#include<string.h>
 
 using namespace std;
 
@@ -24,12 +25,20 @@ vector<bitset<32>> makeConstants(); //Creates 64 constants based on some rule
 vector<bitset<32>> makeH0(); //Creates another set of 8 constants
 vector<bitset<32>> makeH1(vector<bitset<32>> H0, vector<bitset<32>> constants, vector<bitset<32>> messageSchedule);
 vector<bitset<32>> output(vector<bitset<32>> H0, vector<bitset<32>> H1);
-vector<bitset<32>> makeOutput();
+vector<bitset<32>> makeOutput(string inputString);
 string hexdigest(vector<bitset<32>> hashedOutput);
 
-int main(){
+int main(int argc, char* argv[]){
 
-	vector<bitset<32>> hashedOutput = makeOutput();
+	char *arg = argv[1];
+	string inputString = "";
+	int n = strlen(argv[1]);
+	for(int i=0; i<n; i++){
+		inputString += *arg;
+		*arg++;
+	}
+
+	vector<bitset<32>> hashedOutput = makeOutput(inputString);
 	cout<<"\n";
 
 	//Prints the binary of the hash
@@ -39,6 +48,10 @@ int main(){
 
 	//Prints the hexdigest of the hash
 	cout<<hexdigest(hashedOutput)<<endl;
+
+	//Wait
+	int x;
+	cin>>x;
 
 	return 0;
 }
@@ -53,11 +66,9 @@ string hexdigest(vector<bitset<32>> hashedOutput){
 	return digest;
 }
 
-vector<bitset<32>> makeOutput(){
-	cout<<"Enter your string......\n";
-	string input = "";
+vector<bitset<32>> makeOutput(string inputString){
 
-	cin>>input;
+	string input = inputString;
 
 	vector<bool> message;
 	message = makeMessage(input);
